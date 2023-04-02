@@ -7,6 +7,6 @@ public class HelloResourceTest {
     @Test
     public void testHello() {
         HelloResource helloResource = new HelloResource();
-        Assertions.assertEquals("Hello!", helloResource.hello().getEntity().toString());
+        Assertions.assertEquals("Hello!", helloResource.hello("jsp").getEntity().toString());
     }
 }

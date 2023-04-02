@@ -10,8 +10,13 @@ import org.eclipse.microprofile.metrics.annotation.Counted;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.QueryParam;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import jakarta.mvc.Controller;
 import jakarta.mvc.View;
@@ -31,16 +36,25 @@ public class HelloResource
     @Inject
     private Models models;
     
+    /**
+     *
+     */
+    @PostConstruct
+    public void initialize()
+    {
+        System.out.println("HelloResource.initialize()");
+    }
+
     @GET
     @Controller
     @Produces("text/html;charset=utf-8")
     @Path("/hello")
     @Counted(name = "hello", description = "count of hello method")
-    public Response hello()
+    public Response hello(@DefaultValue("jsp") @QueryParam("type") String type)
     {
         models.put("message", node);
         models.put("count", 0);
-        return Response.ok("hello.jsp").build();
+        return Response.ok("hello."+type).build();
     }
     
     @GET
@@ -48,8 +62,7 @@ public class HelloResource
     @Produces("text/html")
     @Path("/session")
     @Counted(name = "session", description = "count of session method")
-    @View("hello.jsp")
-    public Response session()
+    public Response session(@DefaultValue("jsp") @QueryParam("type") String type)
     {
         System.out.println("session on node: " + node);
         System.out.println("session id: " + httpRequest.getSession().getId());
@@ -66,6 +79,6 @@ public class HelloResource
         httpRequest.getSession().setAttribute("count", count);
         models.put("message", node);
         models.put("count", count);
-        return Response.ok("hello.jsp").build();
+        return Response.ok("hello."+type).build();
     }
 }
